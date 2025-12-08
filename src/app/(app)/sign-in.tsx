@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons"
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn()
+  const [isLoading, setIsLoading] = React.useState("");
   const router = useRouter()
 
   const [emailAddress, setEmailAddress] = React.useState('')
@@ -68,9 +69,7 @@ export default function Page() {
           <Text className='text-2xl font-bold text-gray-900 mb-6 text-center'>
             Welcome Back
           </Text>
-        </View>
-
-
+       
         {/* Email Input */}
         <View className='mb-4'>
           <Text className='text-sm font-medium text-gray-700 mb-2'>
@@ -90,19 +89,36 @@ export default function Page() {
           </View>
         </View>
 
-        <Text>Sign in</Text>
+
+      {/* Password input */}
+        <View className='mb-6'>
+          <Text className='text-sm font-medium text-gray-700 mb-2'>
+            Password
+          </Text>
+          <View className='flex-row items-center bg-gray-50 rounded-xl px-4 py-4 border border-gray-200'>
+            <Ionicons name='lock-closed-outline' size={20} color="#687280" />
+            <TextInput 
+            value={password}
+            placeholder='Enter your password'
+            placeholderTextColor="#9CA3AF"
+            secureTextEntry={true}
+            onChangeText={setPassword}
+            className='flex-1 ml-3 text-gray-900'
+            editable={!isLoading} 
+            />
+          </View>
+        </View>
+        </View>
+
+        {/* <Text>Sign in</Text>
         <TextInput
           autoCapitalize="none"
           value={emailAddress}
           placeholder="Enter email"
           onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-        />
-        <TextInput
-          value={password}
-          placeholder="Enter password"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
+        /> */}
+    
+        {/* Sign in button */}
         <TouchableOpacity onPress={onSignInPress}>
           <Text>Continue</Text>
         </TouchableOpacity>
@@ -114,5 +130,5 @@ export default function Page() {
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  )
+  );
 }
