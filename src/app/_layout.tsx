@@ -5,7 +5,10 @@ import { tokenCache } from '@clerk/clerk-expo/token-cache'
 
 export default function Layout() {
    return (
-    <ClerkProvider tokenCache={tokenCache}>
+   <ClerkProvider
+      publishableKey="pk_test_Zmxvd2luZy1yYWJiaXQtNzEuY2xlcmsuYWNjb3VudHMuZGV2JA"
+      tokenCache={tokenCache}
+    >
       <Slot />
     </ClerkProvider>
   )
