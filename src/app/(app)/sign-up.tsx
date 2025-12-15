@@ -98,7 +98,7 @@ export default function SignUpScreen() {
                 <Text className='text-3xl font-bold text-gray-900 mb-2'>
                   Check Your Email
                 </Text>
-                <Text className='text-lg text-gray-900 text center'>
+                <Text className='text-lg text-gray-900 text-center'>
                   We've sent a verification code to {'\n'}
                   {emailAddress}
                 </Text>
@@ -124,7 +124,7 @@ export default function SignUpScreen() {
                       placeholder='Enter 6-digit code'
                       placeholderTextColor='#9CA3AF'
                       onChangeText={setCode}
-                      className='flex-1 ml-3 text-gray-900 text-center text-lg tracking-widset'
+                      className='flex-1 ml-3 text-gray-900 text-center text-lg tracking-wide'
                       keyboardType='number-pad'
                       editable={!isLoading}
                     />
