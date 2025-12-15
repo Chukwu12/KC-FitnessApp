@@ -62,7 +62,7 @@ function Layout() {
             />
 
             <Tabs.Screen
-            name="profile/index"
+            name="profile"
             options={{
                 title: "Profile",
                 headerShown: false,
