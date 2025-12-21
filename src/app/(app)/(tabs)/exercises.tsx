@@ -1,6 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Text, SafeAreaView, FlatList, View, Image, ActivityIndicator } from 'react-native';
-import { client } from '../../../lib/sanity';
+import React, { useEffect, useState } from "react";
+import { 
+  Text, 
+  SafeAreaView, 
+  FlatList, 
+  View, 
+  ActivityIndicator, 
+  StyleSheet 
+} from "react-native";
+import { Image } from "expo-image"; // ✅ Works on web + mobile
+import { client } from "../../../lib/sanity";
 
 type Exercise = {
   _id: string;
@@ -8,10 +16,10 @@ type Exercise = {
   bodyPart: string;
   target: string;
   equipment: string;
-  gifUrl: string;
-  instructions: string[];
-  difficulty: string;
-  tags: string[];
+  gifUrl?: string;
+  instructions?: string[];
+  difficulty?: string;
+  tags?: string[];
 };
 
 export default function Exercises() {
@@ -19,7 +27,7 @@ export default function Exercises() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchExercises() {
+    const fetchExercises = async () => {
       try {
         const data = await client.fetch(`
           *[_type == "exercise"]{
@@ -28,82 +36,132 @@ export default function Exercises() {
             bodyPart,
             target,
             equipment,
-            gifUrl,
-            instructions,
             difficulty,
-            tags
+            tags,
+            instructions,
+            gifUrl
           }
         `);
         setExercises(data);
-      } catch (err) {
-        console.error('Error fetching exercises:', err);
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchExercises();
   }, []);
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center">
+      <SafeAreaView style={styles.center}>
         <ActivityIndicator size="large" color="#3B82F6" />
-        <Text className="mt-2 text-gray-500">Loading exercises...</Text>
+        <Text style={styles.loadingText}>Loading exercises...</Text>
       </SafeAreaView>
     );
   }
 
   if (!exercises.length) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center">
-        <Text className="text-gray-500 text-lg">No exercises found.</Text>
+      <SafeAreaView style={styles.center}>
+        <Text style={styles.emptyText}>No exercises found.</Text>
       </SafeAreaView>
     );
   }
 
+  const renderItem = ({ item }: { item: Exercise }) => (
+    <View style={styles.card}>
+      {item.gifUrl ? (
+        <Image
+          source={{ uri: item.gifUrl }}
+          style={styles.image}
+          contentFit="cover"
+        />
+      ) : (
+        <View style={[styles.image, styles.placeholder]}>
+          <Text>No Image</Text>
+        </View>
+      )}
+      <Text style={styles.name}>{item.name}</Text>
+      <Text style={styles.subtext}>
+        {item.target} • {item.equipment}
+      </Text>
+      {item.instructions?.length > 0 && (
+        <View style={styles.instructions}>
+          <Text style={styles.instructionTitle}>Instructions:</Text>
+          {item.instructions.map((step, index) => (
+            <Text key={index} style={styles.instructionStep}>
+              • {step}
+            </Text>
+          ))}
+        </View>
+      )}
+      {item.tags?.length > 0 && (
+        <View style={styles.tagsContainer}>
+          {item.tags.map((tag, idx) => (
+            <Text key={idx} style={styles.tag}>
+              {tag}
+            </Text>
+          ))}
+        </View>
+      )}
+    </View>
+  );
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 p-4">
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={exercises}
         keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <View className="bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100">
-            <Text className="text-xl font-bold text-gray-900 mb-2">{item.name}</Text>
-            <Image
-              source={{ uri: item.gifUrl }}
-              style={{ width: '100%', height: 200, borderRadius: 12 }}
-              resizeMode="contain"
-            />
-            <Text className="text-gray-700 mt-2">Body Part: {item.bodyPart}</Text>
-            <Text className="text-gray-700">Target Muscle: {item.target}</Text>
-            <Text className="text-gray-700">Equipment: {item.equipment}</Text>
-            <Text className="text-gray-700">Difficulty: {item.difficulty}</Text>
-
-            {item.instructions?.length > 0 && (
-              <View className="mt-2">
-                <Text className="text-gray-800 font-semibold mb-1">Instructions:</Text>
-                {item.instructions.map((step, index) => (
-                  <Text key={index} className="text-gray-700">• {step}</Text>
-                ))}
-              </View>
-            )}
-
-            {item.tags?.length > 0 && (
-              <View className="flex-row flex-wrap mt-2">
-                {item.tags.map((tag, idx) => (
-                  <Text
-                    key={idx}
-                    className="text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded-full mr-2 mb-1"
-                  >
-                    {tag}
-                  </Text>
-                ))}
-              </View>
-            )}
-          </View>
-        )}
+        renderItem={renderItem}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, backgroundColor: "#F9FAFB" },
+  columnWrapper: { justifyContent: "space-between" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  loadingText: { marginTop: 8, color: "#6B7280" },
+  emptyText: { color: "#6B7280", fontSize: 18 },
+  card: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  image: { width: "100%", height: 140, borderRadius: 12, marginBottom: 8 },
+  placeholder: { 
+    justifyContent: "center", 
+    alignItems: "center", 
+    backgroundColor: "#E5E7EB" 
+  },
+  name: { fontSize: 16, fontWeight: "600", marginBottom: 4 },
+  subtext: { fontSize: 14, color: "#4B5563" },
+  instructions: { marginTop: 8 },
+  instructionTitle: { fontWeight: "600", marginBottom: 4 },
+  instructionStep: { fontSize: 14, color: "#4B5563" },
+  tagsContainer: { flexDirection: "row", flexWrap: "wrap", marginTop: 8 },
+  tag: {
+    fontSize: 12,
+    backgroundColor: "#DBEAFE",
+    color: "#1E40AF",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 12,
+    marginRight: 4,
+    marginBottom: 4,
+  },
+});

@@ -15,6 +15,10 @@
       ]
     ],
     "name": "fit-app",
-    "slug": "fit-app"
+    "slug": "fit-app",
+    "extra": {
+      "SANITY_PROJECT_ID": "cwx5k0kx",
+      "SANITY_DATASET": "production"
+    }
   }
 }

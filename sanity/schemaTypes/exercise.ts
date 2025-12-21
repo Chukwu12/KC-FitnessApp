@@ -12,12 +12,10 @@ export default {
     },
     {
       name: 'name',
-      title: 'Name',
       type: 'string',
     },
     {
       name: 'bodyPart',
-      title: 'Body Part',
       type: 'string',
     },
     {
@@ -27,22 +25,19 @@ export default {
     },
     {
       name: 'equipment',
-      title: 'Equipment',
       type: 'string',
     },
     {
       name: 'instructions',
-      title: 'Instructions',
-      type: 'text', // ✅ IMPORTANT
+      type: 'array',
+      of: [{ type: 'string' }],
     },
     {
       name: 'gifUrl',
-      title: 'Exercise GIF URL',
       type: 'url',
     },
     {
       name: 'difficulty',
-      title: 'Difficulty',
       type: 'string',
       options: {
         list: ['Beginner', 'Intermediate', 'Advanced'],
@@ -50,9 +45,21 @@ export default {
     },
     {
       name: 'tags',
-      title: 'Tags',
       type: 'array',
       of: [{ type: 'string' }],
+    },
+    {
+      name: 'description',
+      type: 'text',
+    },
+    {
+      name: 'videoUrl',
+      type: 'url',
+    },
+    {
+      name: 'isActive',
+      type: 'boolean',
+      initialValue: true,
     },
   ],
 };
