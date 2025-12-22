@@ -8,7 +8,7 @@ export default {
       name: 'exerciseId',
       title: 'Exercise ID (RapidAPI)',
       type: 'string',
-      readOnly: true,
+      // readOnly: true,
     },
     {
       name: 'name',
@@ -30,7 +30,7 @@ export default {
     {
       name: 'instructions',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [{type: 'string'}],
     },
     {
       name: 'gifUrl',
@@ -46,7 +46,7 @@ export default {
     {
       name: 'tags',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [{type: 'string'}],
     },
     {
       name: 'description',
@@ -62,4 +62,4 @@ export default {
       initialValue: true,
     },
   ],
-};
+}

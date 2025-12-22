@@ -1,16 +1,17 @@
-import 'dotenv/config';
-import axios from 'axios';
-import { createClient } from '@sanity/client';
+// import "dotenv/config";
+require("dotenv").config();
+const axios = require("axios");
+const { createClient } = require("@sanity/client");
 
 const sanity = createClient({
   projectId: process.env.SANITY_PROJECT_ID,
-  dataset: process.env.SANITY_DATASET || 'production',
+  dataset: process.env.SANITY_DATASET || "production",
   token: process.env.SANITY_API_TOKEN,
-  apiVersion: '2024-01-01',
+  apiVersion: "2024-01-01",
   useCdn: false,
 });
 
-const RAPID_API_KEY = process.env.RAPID_API_KEY || 'YOUR_RAPIDAPI_KEY';
+const RAPID_API_KEY = process.env.RAPID_API_KEY || "YOUR_RAPIDAPI_KEY";
 const RESOLUTION = 180; // GIF resolution
 
 interface Exercise {
@@ -30,8 +31,8 @@ async function fetchExercisesFromRapidAPI(limit = 10): Promise<Exercise[]> {
       `https://exercisedb.p.rapidapi.com/exercises`,
       {
         headers: {
-          'X-RapidAPI-Key': RAPID_API_KEY,
-          'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com',
+          "X-RapidAPI-Key": RAPID_API_KEY,
+          "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
         },
         params: { limit },
       }
@@ -39,7 +40,7 @@ async function fetchExercisesFromRapidAPI(limit = 10): Promise<Exercise[]> {
 
     return response.data;
   } catch (error) {
-    console.error('Error fetching exercises from RapidAPI:', error);
+    console.error("Error fetching exercises from RapidAPI:", error);
     return [];
   }
 }
@@ -49,11 +50,11 @@ function getExerciseGifUrl(exerciseId: string) {
 }
 
 async function importExercises() {
-  console.log('🚀 Starting exercise import...');
+  console.log("🚀 Starting exercise import...");
 
   const exercises = await fetchExercisesFromRapidAPI(20);
   if (!exercises.length) {
-    console.log('No exercises fetched from RapidAPI.');
+    console.log("No exercises fetched from RapidAPI.");
     return;
   }
 
@@ -72,17 +73,20 @@ async function importExercises() {
       continue;
     }
 
+    const gifUrl = getExerciseGifUrl(ex.id);
+    console.log(`Exercise: ${ex.name} -> GIF URL: ${gifUrl}`);
+
     const doc = {
-      _type: 'exercise',
+      _type: "exercise",
       exerciseId: ex.id,
       name: ex.name,
       bodyPart: ex.bodyPart,
       target: ex.target,
       equipment: ex.equipment,
-      difficulty: ex.difficulty || 'medium',
+      difficulty: ex.difficulty || "medium",
       instructions: ex.instructions || [],
       tags: ex.tags || [],
-      gifUrl: getExerciseGifUrl(ex.id),
+      gifUrl: gifUrl,
     };
 
     try {
@@ -93,7 +97,7 @@ async function importExercises() {
     }
   }
 
-  console.log('✅ Import complete');
+  console.log("✅ Import complete");
   console.log(`Created: ${createdCount}`);
   console.log(`Skipped: ${skippedCount}`);
 }
