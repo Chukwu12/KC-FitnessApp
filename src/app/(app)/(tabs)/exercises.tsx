@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { 
-  Text, 
-  SafeAreaView, 
-  FlatList, 
-  View, 
-  ActivityIndicator, 
-  StyleSheet 
+import {
+  Text,
+  SafeAreaView,
+  FlatList,
+  View,
+  ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { Image } from "expo-image"; // ✅ Works on web + mobile
 import { client } from "../../../lib/sanity";
@@ -143,10 +143,10 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
   },
   image: { width: "100%", height: 140, borderRadius: 12, marginBottom: 8 },
-  placeholder: { 
-    justifyContent: "center", 
-    alignItems: "center", 
-    backgroundColor: "#E5E7EB" 
+  placeholder: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#E5E7EB",
   },
   name: { fontSize: 16, fontWeight: "600", marginBottom: 4 },
   subtext: { fontSize: 14, color: "#4B5563" },
