@@ -1,0 +1,7 @@
+// sanity/sanity-typegen.js
+module.exports = {
+  path: '../src/**/*.{ts,tsx,js,jsx}',
+  schema: './schema.json',
+  generates: '../src/lib/sanity/types.ts',
+  overloadClientMethods: true,
+}
