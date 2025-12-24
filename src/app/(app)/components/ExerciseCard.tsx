@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { Exercise } from "../../../lib/sanity/types.js";
+import { urlFor } from "../../../lib/client.js";
+import { getExerciseGif } from "../../../utils/getExerciseGif.js";
 
 interface ExerciseCardProps {
   item: Exercise;
