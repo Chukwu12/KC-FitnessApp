@@ -1,37 +1,35 @@
+import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Exercise } from "@/lib/sanity/types";
-
-const getDifficultyColor = (difficulty?: string) => {
-  switch (difficulty) {
-    case "beginner":
-      return "bg-green-500";
-    case "intermediate":
-      return "bg-yellow-500";
-    case "advanced":
-      return "bg-red-500";
-    default:
-      return "bg-gray-400";
-  }
-};
-
-const getDifficultyText = (difficulty?: string) => {
-  switch (difficulty) {
-    case "beginner":
-      return "Beginner";
-    case "intermediate":
-      return "Intermediate";
-    case "advanced":
-      return "Advanced";
-    default:
-      return "Unknown";
-  }
-};
+import { Image } from "expo-image";
+import { Exercise } from "../../../lib/sanity/types.js";
 
 interface ExerciseCardProps {
   item: Exercise;
   onPress: () => void;
   showChevron?: boolean;
 }
+
+const normalizeDifficulty = (difficulty?: string) => {
+  if (!difficulty) return "Unknown";
+  const lower = difficulty.toLowerCase();
+  if (lower === "beginner") return "Beginner";
+  if (lower === "intermediate") return "Intermediate";
+  if (lower === "advanced") return "Advanced";
+  return "Unknown";
+};
+
+const getDifficultyColor = (difficulty?: string) => {
+  switch (normalizeDifficulty(difficulty)) {
+    case "Beginner":
+      return "bg-green-500";
+    case "Intermediate":
+      return "bg-yellow-500";
+    case "Advanced":
+      return "bg-red-500";
+    default:
+      return "bg-gray-400";
+  }
+};
 
 export default function ExerciseCard({
   item,
@@ -40,10 +38,22 @@ export default function ExerciseCard({
 }: ExerciseCardProps) {
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100 p-4"
+      className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100 p-4 flex-1"
       onPress={onPress}
       activeOpacity={0.8}
     >
+      {item.gifUrl && (
+        <Image
+          source={{ uri: item.gifUrl }}
+          style={{
+            width: "100%",
+            height: 140,
+            borderRadius: 16,
+            marginBottom: 8,
+          }}
+          contentFit="cover"
+        />
+      )}
       <Text className="text-lg font-semibold text-gray-900">{item.name}</Text>
 
       <View className="flex-row items-center mt-2">
@@ -53,7 +63,7 @@ export default function ExerciseCard({
           )}`}
         >
           <Text className="text-xs text-white font-medium">
-            {getDifficultyText(item.difficulty)}
+            {normalizeDifficulty(item.difficulty)}
           </Text>
         </View>
       </View>
