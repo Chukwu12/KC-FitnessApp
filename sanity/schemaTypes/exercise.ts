@@ -8,7 +8,6 @@ export default {
       name: 'exerciseId',
       title: 'Exercise ID (RapidAPI)',
       type: 'string',
-      // readOnly: true,
     },
     {
       name: 'name',
@@ -24,8 +23,29 @@ export default {
       type: 'string',
     },
     {
+      name: 'secondaryMuscles',
+      title: 'Secondary Muscles',
+      type: 'array',
+      of: [{type: 'string'}],
+    },
+    {
       name: 'equipment',
       type: 'string',
+    },
+    {
+      name: 'category',
+      type: 'string',
+      options: {
+        list: [
+          'strength',
+          'cardio',
+          'stretching',
+          'plyometrics',
+          'powerlifting',
+          'strongman',
+          'olympic weightlifting',
+        ],
+      },
     },
     {
       name: 'instructions',
@@ -40,7 +60,9 @@ export default {
       name: 'difficulty',
       type: 'string',
       options: {
-        list: ['Beginner', 'Intermediate', 'Advanced'],
+        // 👇 pick one approach and stick to it
+        // Option A: store lowercase (matches RapidAPI)
+        list: ['beginner', 'intermediate', 'advanced'],
       },
     },
     {

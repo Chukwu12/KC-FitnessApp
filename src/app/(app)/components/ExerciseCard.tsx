@@ -1,9 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
-import { Exercise } from "../../../lib/sanity/types.js";
-import { urlFor } from "../../../lib/client.js";
-import { getExerciseGif } from "../../../utils/getExerciseGif.js";
+import type { Exercise } from "../../../lib/sanity/types";
 
 interface ExerciseCardProps {
   item: Exercise;
@@ -33,20 +31,31 @@ const getDifficultyColor = (difficulty?: string) => {
   }
 };
 
+// ✅ remove any trailing slash so we never get `//api/...`
+const BACKEND_URL = (process.env.EXPO_PUBLIC_BACKEND_URL || "").replace(
+  /\/$/,
+  ""
+);
+
 export default function ExerciseCard({
   item,
   onPress,
   showChevron = false,
 }: ExerciseCardProps) {
+  const gifUri =
+    item.exerciseId && BACKEND_URL
+      ? `${BACKEND_URL}/api/gifs/exercise/${item.exerciseId}`
+      : undefined;
+
   return (
     <TouchableOpacity
       className="bg-white rounded-2xl mb-4 shadow-sm border border-gray-100 p-4 flex-1"
       onPress={onPress}
       activeOpacity={0.8}
     >
-      {item.gifUrl && (
+      {gifUri ? (
         <Image
-          source={{ uri: item.gifUrl }}
+          source={{ uri: gifUri }}
           style={{
             width: "100%",
             height: 140,
@@ -55,8 +64,15 @@ export default function ExerciseCard({
           }}
           contentFit="cover"
         />
+      ) : (
+        <View className="h-[140px] w-full rounded-2xl bg-gray-200 mb-2 items-center justify-center">
+          <Text className="text-gray-500 text-xs">No image</Text>
+        </View>
       )}
-      <Text className="text-lg font-semibold text-gray-900">{item.name}</Text>
+
+      <Text className="text-lg font-semibold text-gray-900" numberOfLines={1}>
+        {item.name}
+      </Text>
 
       <View className="flex-row items-center mt-2">
         <View
@@ -68,6 +84,10 @@ export default function ExerciseCard({
             {normalizeDifficulty(item.difficulty)}
           </Text>
         </View>
+
+        {showChevron ? (
+          <Text className="ml-auto text-gray-400">{">"}</Text>
+        ) : null}
       </View>
     </TouchableOpacity>
   );

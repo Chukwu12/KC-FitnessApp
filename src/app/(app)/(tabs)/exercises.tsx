@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Text,
   SafeAreaView,
@@ -12,38 +12,30 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import ExerciseCard from "../components/ExerciseCard";
 import { client } from "../../../lib/sanity";
-import { Exercise } from "../../../lib/sanity/types";
+import type { Exercise } from "../../../lib/sanity/types";
 import { defineQuery } from "groq";
 
 // -------------------
 // GROQ query outside component
 // -------------------
-export const exercisesQuery = defineQuery(`*[_type == "exercise"] {
+export const exercisesQuery = defineQuery(`*[_type == "exercise"]{
   _id,
+  exerciseId,
   name,
   bodyPart,
   target,
   equipment,
   difficulty,
   tags,
-  instructions
+  instructions,
+  gifUrl
 }`);
-
-// -------------------
-// RapidAPI GIF helper
-// -------------------
-const RAPID_API_KEY = process.env.RAPID_API_KEY;
-const RESOLUTION = 180;
-
-const getExerciseGif = (exerciseId: string) =>
-  `https://exercisedb.p.rapidapi.com/image?exerciseId=${exerciseId}&resolution=${RESOLUTION}&rapidapi-key=${RAPID_API_KEY}`;
 
 // -------------------
 // Component
 // -------------------
 export default function Exercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -52,15 +44,7 @@ export default function Exercises() {
   const fetchExercises = async () => {
     try {
       const data = await client.fetch(exercisesQuery);
-
-      // add gifUrl for each exercise
-      const dataWithGifs = data.map((ex: Exercise) => ({
-        ...ex,
-        gifUrl: ex._id ? getExerciseGif(ex._id) : undefined,
-      }));
-
-      setExercises(dataWithGifs);
-      setFilteredExercises(dataWithGifs);
+      setExercises(data);
     } catch (error) {
       console.error("Error fetching exercises:", error);
     } finally {
@@ -78,17 +62,12 @@ export default function Exercises() {
     setRefreshing(false);
   };
 
-  // Filter exercises based on search
-  useEffect(() => {
-    if (!searchQuery) {
-      setFilteredExercises(exercises);
-    } else {
-      setFilteredExercises(
-        exercises.filter((ex) =>
-          ex.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    }
+  // Filter exercises based on search (derived state)
+  const filteredExercises = useMemo(() => {
+    if (!searchQuery) return exercises;
+    return exercises.filter((ex) =>
+      (ex.name ?? "").toLowerCase().includes(searchQuery.toLowerCase())
+    );
   }, [searchQuery, exercises]);
 
   const renderItem = ({ item }: { item: Exercise }) => (
@@ -145,6 +124,7 @@ export default function Exercises() {
         renderItem={renderItem}
         numColumns={2}
         columnWrapperStyle={{ gap: 12, paddingHorizontal: 16, marginTop: 16 }}
+        contentContainerStyle={{ paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
